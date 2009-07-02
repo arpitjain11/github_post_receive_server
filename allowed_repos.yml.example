@@ -1,0 +1,8 @@
+repo_1:
+- git@github.com:user_1/repo_1.git
+
+repo_2:
+- git@github.com:user_2/repo_2.git
+
+repo_3:
+- git@github.com:user_2/repo_3.git

@@ -11,16 +11,28 @@
 require 'rubygems'
 require 'rack'
 require 'json'
+require 'yaml'
 
 module GithubPostReceiveServer
   class RackApp
     GO_AWAY_COMMENT = "Be gone, foul creature of the internet."
     THANK_YOU_COMMENT = "Thanks! You beautiful soul you."
+    REPOS_FILE = "allowed_repos.yml"
+    REPOS_PATH = "/mnt/redmine_apps"
+    REDMINE_PATH = "/mnt/app/redmine"
 
     # This is what you get if you make a request that isn't a POST with a 
     # payload parameter.
     def rude_comment
       @res.write GO_AWAY_COMMENT
+    end
+   
+    def get_allowed_repos
+      unless File.exists?(REPOS_FILE)
+        puts "#{REPOS_FILE} not found"
+        return false
+      end
+      YAML::load_file(repo_file)
     end
 
     # Does what it says on the tin. By default, not much, it just prints the
@@ -30,13 +42,42 @@ module GithubPostReceiveServer
       
       return rude_comment if payload.nil?
       
-      puts payload unless $TESTING # remove me!
+      unless allowed_repos = get_allowed_repos
+        return rude_comment
+      end
+      # puts "Allowed repos are #{allowed_repo_names.inspect}"  # remove me
       
+      puts payload #unless $TESTING # remove me!
       payload = JSON.parse(payload)
+      repo_name = payload['repository']['name']
       
-      # ... Your code goes here! ...
-      
-      @res.write THANK_YOU_COMMENT
+      if allowed_repos.has_key?(repo_name)
+        repo_path = File.join(REPOS_PATH, repo_name)
+        repo_url = payload['repository']['url']
+        
+        unless repo_url == allowed_repos[repo_name]
+          puts "Repository url is not same as url received from github"
+          puts "from github: #{repo_url}"
+          puts "in config file: #{allowed_repos[repo_name]}"
+          @res.write ""
+          return
+        end
+
+        if File.exists(repo_path) && File.directory?(repo_path)
+          # Assuming it's a git repo
+          command = "cd #{repo_path} && git pull && cd #{REDMINE_PATH} && rake redmine:fetch_changesets"
+          puts command
+          system(command)
+        elsif !File.exists?(repo_path)
+          command ="cd #{REPOS_PATH} && git clone #{repo_url} #{repo_name} && cd #{REDMINE_PATH} && rake redmine:fetch_changesets"
+          puts command
+          system(command)
+        end
+
+        @res.write THANK_YOU_COMMENT
+      else
+        @res.write GO_AWAY_COMMENT
+      end
     end
 
     # Call is the entry point for all rack apps.
