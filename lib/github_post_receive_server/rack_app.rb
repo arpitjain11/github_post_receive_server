@@ -33,7 +33,7 @@ module GithubPostReceiveServer
         puts "#{REPOS_FILE} not found"
         return false
       end
-      YAML::load_file(repo_file)
+      YAML::load_file(REPOS_FILE)
     end
 
     # Does what it says on the tin. By default, not much, it just prints the
