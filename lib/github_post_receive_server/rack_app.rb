@@ -54,16 +54,8 @@ module GithubPostReceiveServer
       
       if allowed_repos.has_key?(repo_name)
         repo_path = File.join(REPOS_PATH, repo_name)
-        repo_url = payload['repository']['url']
+        repo_url = allowed_repos[repo_name]
         
-        unless repo_url == allowed_repos[repo_name]
-          puts "Repository url is not same as url received from github"
-          puts "from github: #{repo_url}"
-          puts "in config file: #{allowed_repos[repo_name]}"
-          @res.write ""
-          return
-        end
-
         if File.exists(repo_path) && File.directory?(repo_path)
           # Assuming it's a git repo
           command = "cd #{repo_path} && git pull && cd #{REDMINE_PATH} && rake redmine:fetch_changesets"
