@@ -20,7 +20,7 @@ module GithubPostReceiveServer
     THANK_YOU_COMMENT = "Thanks! You beautiful soul you."
     REPOS_FILE = "allowed_repos.yml"
     REPOS_PATH = "/mnt/redmine_apps"
-    REDMINE_PATH = "/mnt/app/redmine"
+    REDMINE_PATH = "/mnt/app/redmine/current"
 
     # This is what you get if you make a request that isn't a POST with a 
     # payload parameter.
