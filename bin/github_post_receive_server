@@ -2,8 +2,8 @@
 trap(:INT) { exit 0 }
 
 defaults = {
-  :Host => '127.0.0.1',
-  :Port => 9001
+  :Host => '0.0.0.0',
+  :Port => 9010
 }
 
 abort %{
