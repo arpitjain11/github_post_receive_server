@@ -1,0 +1,6 @@
+* sudo gem install rack
+* sudo gem install json
+
+* To Run use
+ 
+start-stop-daemon --start --exec #{path_to github_post_receive_server binary file} --pid tmp/pids/github_post.pid -d #{path_to_server_directory} -b"
