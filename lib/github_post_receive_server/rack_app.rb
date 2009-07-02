@@ -58,12 +58,12 @@ module GithubPostReceiveServer
         
         if File.exists?(repo_path) && File.directory?(repo_path)
           # Assuming it's a git repo
-          command = "cd #{repo_path} && git pull && cd #{REDMINE_PATH} && rake redmine:fetch_changesets"
+          command = "cd #{repo_path} && git pull && cd #{REDMINE_PATH} && rake RAILS_ENV=production redmine:fetch_changesets"
           puts command
           system(command)
         elsif !File.exists?(repo_path)
           FileUtils.mkdir_p(REPOS_PATH)
-          command ="cd #{REPOS_PATH} && git clone #{repo_url} #{repo_name} && cd #{REDMINE_PATH} && rake redmine:fetch_changesets"
+          command ="cd #{REPOS_PATH} && git clone #{repo_url} #{repo_name} && cd #{REDMINE_PATH} && rake RAILS_ENV=production redmine:fetch_changesets"
           puts command
           system(command)
         end
