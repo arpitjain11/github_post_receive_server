@@ -12,6 +12,7 @@ require 'rubygems'
 require 'rack'
 require 'json'
 require 'yaml'
+require 'fileutils'
 
 module GithubPostReceiveServer
   class RackApp
@@ -69,6 +70,7 @@ module GithubPostReceiveServer
           puts command
           system(command)
         elsif !File.exists?(repo_path)
+          FileUtils.mkdir_p(REPOS_PATH)
           command ="cd #{REPOS_PATH} && git clone #{repo_url} #{repo_name} && cd #{REDMINE_PATH} && rake redmine:fetch_changesets"
           puts command
           system(command)
