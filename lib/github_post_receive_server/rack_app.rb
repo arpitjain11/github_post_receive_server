@@ -56,7 +56,7 @@ module GithubPostReceiveServer
         repo_path = File.join(REPOS_PATH, repo_name)
         repo_url = allowed_repos[repo_name]
         
-        if File.exists(repo_path) && File.directory?(repo_path)
+        if File.exists?(repo_path) && File.directory?(repo_path)
           # Assuming it's a git repo
           command = "cd #{repo_path} && git pull && cd #{REDMINE_PATH} && rake redmine:fetch_changesets"
           puts command
